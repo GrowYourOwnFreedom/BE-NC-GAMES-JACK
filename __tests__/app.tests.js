@@ -13,7 +13,6 @@ describe("GET-/api/categories", () => {
 			.get("/api/categories")
 			.expect(200)
 			.then(({ body: { categories } }) => {
-				console.log(categories);
 				expect(categories.length).toBe(4);
 				categories.forEach((category) => {
 					expect(typeof category.slug).toBe("string");
