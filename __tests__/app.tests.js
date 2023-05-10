@@ -22,7 +22,7 @@ describe("GET-/api/categories", () => {
 	});
 });
 
-describe("GET /api/reviews", () => {
+describe("GET /api/reviews/:review_id", () => {
 	test("GET status 200 Responds with a review object,", () => {
 		return request(app)
 			.get("/api/reviews/10")
