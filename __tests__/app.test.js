@@ -21,3 +21,14 @@ describe("GET-/api/categories", () => {
 			});
 	});
 });
+
+describe("GET- /api", () => {
+	test("GET: status 200 Responds with JSON describing all the available endpoints", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body: endpoints }) => {
+				expect(typeof endpoints).toBe("object");
+			});
+	});
+});
