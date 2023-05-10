@@ -1,3 +1,38 @@
+const app = require("../app/app");
+const request = require("supertest");
+const db = require("../db/connection");
+const data = require("../db/data/test-data");
+const seed = require("../db/seeds/seed");
+
+beforeEach(() => seed(data));
+afterAll(() => db.end());
+
+describe("GET-/api/categories", () => {
+	test("GET status 200, should return an array of category objects, each of which should have the following properties: slug, description", () => {
+		return request(app)
+			.get("/api/categories")
+			.expect(200)
+			.then(({ body: { categories } }) => {
+				expect(categories.length).toBe(4);
+				categories.forEach((category) => {
+					expect(typeof category.slug).toBe("string");
+					expect(typeof category.description).toBe("string");
+				});
+			});
+	});
+});
+
+describe("GET- /api", () => {
+	test("GET: status 200 Responds with JSON describing all the available endpoints", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body: endpoints }) => {
+				expect(typeof endpoints).toBe("object");
+			});
+	});
+});
+
 describe("GET /api/reviews/:review_id", () => {
 	test("GET status 200 Responds with a review object,", () => {
 		return request(app)
@@ -36,16 +71,6 @@ describe("GET /api/reviews/:review_id", () => {
 			.expect(400)
 			.then((response) => {
 				expect(response.body.msg).toBe("bad request!");
-			});
-	});
-});
-describe("GET- /api", () => {
-	test("GET: status 200 Responds with JSON describing all the available endpoints", () => {
-		return request(app)
-			.get("/api")
-			.expect(200)
-			.then(({ body: endpoints }) => {
-				expect(typeof endpoints).toBe("object");
 			});
 	});
 });
