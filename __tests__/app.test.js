@@ -148,7 +148,96 @@ describe("GET /api/reviews", () => {
 			});
 	});
 });
+describe("POST /api/reviews/:review_id/comments. accepts an obj with username and body properties", () => {
+	test("POST 201 adds comment to database, returns comment obj", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment.body).toBe("this review is so pointless!");
+				expect(comment.votes).toBe(0);
+				expect(comment.review_id).toBe(1);
+				expect(comment.comment_id).toBe(7);
+				expect(comment.author).toBe("bainesface");
+				expect(typeof comment.created_at).toBe("string");
+			});
+	});
+	test("POST 201 adds comment to database, returns comment obj even if it contains unnecessary props, which are ignored", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+			unnecessary: "this prop is unnecessary",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment.body).toBe("this review is so pointless!");
+				expect(comment.votes).toBe(0);
+				expect(comment.review_id).toBe(1);
+				expect(comment.comment_id).toBe(7);
+				expect(comment.author).toBe("bainesface");
+				expect(typeof comment.created_at).toBe("string");
+			});
+	});
 
+	test('POST 404- "sorry, review_id not found!"', () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/20/comments")
+			.send(testComment)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test('POST 404- "sorry, username not found!"', () => {
+		const testComment = {
+			username: "nonsense",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, username not found!");
+			});
+	});
+	test("POST 400- object missing required props!", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/nonsense/comments")
+			.send(testComment)
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("POST 400- Not Acceptable!", () => {
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"sorry, comment should be in the form of an obj with a username and a body property, both of which should be strings"
+				);
+			});
+	});
+});
 describe("PATCH /api/reviews/:review_id", () => {
 	test("PATCH status 200 vote count is updated", () => {
 		return request(app)
@@ -202,3 +291,4 @@ describe("PATCH /api/reviews/:review_id", () => {
 			});
 	});
 });
+
