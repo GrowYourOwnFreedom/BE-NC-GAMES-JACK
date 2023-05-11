@@ -159,6 +159,19 @@ describe("PATCH /api/reviews/:review_id", () => {
 				expect(response.body.review.votes).toBe(2);
 			});
 	});
+	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({
+				inc_votes: 1,
+				unnecessary: "this property should have no effect",
+			})
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+
 	test("PATCH status 404 review_id not found", () => {
 		return request(app)
 			.patch("/api/reviews/20")
