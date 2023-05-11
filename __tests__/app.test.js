@@ -123,9 +123,9 @@ describe("GET-/api/reviews/:review_id/comments", () => {
 			.expect(200)
 			.then((response) => {
 				expect(response.body.comments).toEqual([]);
-
-			}))
-		})
+			});
+	});
+});
 
 describe("GET /api/reviews", () => {
 	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
