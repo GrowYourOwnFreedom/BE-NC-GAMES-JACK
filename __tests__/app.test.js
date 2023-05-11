@@ -181,6 +181,19 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 				expect(response.body.msg).toBe("sorry, review_id not found!");
 			});
 	});
+	test('POST 404- "sorry, username not found!"', () => {
+		const testComment = {
+			username: "nonsense",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, username not found!");
+			});
+	});
 	test("POST 400- bad request!", () => {
 		const testComment = {
 			username: "bainesface",

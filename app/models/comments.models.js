@@ -1,5 +1,5 @@
 const db = require("../../db/connection");
-const { checkReview_idExists } = require("../utils");
+const { checkReview_idExists, checkUsernameExists } = require("../utils");
 exports.selectCommentsByReview_id = (id) => {
 	return checkReview_idExists(id)
 		.then(() => {
@@ -25,7 +25,10 @@ exports.insertCommentByReview_id = (id, comment) => {
 			msg: "sorry, comment should be in the form of an obj with a username and a body property, both of which should be strings",
 		});
 	}
-	return checkReview_idExists(id)
+	return checkUsernameExists(username)
+		.then(() => {
+			return checkReview_idExists(id);
+		})
 		.then(() => {
 			return db.query(
 				`
