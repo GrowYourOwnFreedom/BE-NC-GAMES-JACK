@@ -16,3 +16,12 @@ exports.selectCommentsByReview_id = (id) => {
 			return result.rows;
 		});
 };
+
+exports.deleteCommentByComment_id = (id) => {
+	console.log(id);
+	return db.query(
+		`DELETE  FROM comments
+	WHERE comment_id = $1;`,
+		[id]
+	);
+};

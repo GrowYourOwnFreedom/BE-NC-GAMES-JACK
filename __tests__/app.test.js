@@ -148,3 +148,22 @@ describe("GET /api/reviews", () => {
 			});
 	});
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+	test("DELETE status 204 should delete the relevant comment ", () => {
+		return request(app)
+			.delete("/api/comments/5")
+			.expect(204)
+			.then(() => {
+				return db.query(
+					`
+			SELECT * FROM comments
+			WHERE comment_id = 5;
+			`
+				);
+			})
+			.then((result) => {
+				expect(result.rows.length).toBe(0);
+			});
+	});
+});

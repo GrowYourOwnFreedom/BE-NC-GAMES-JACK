@@ -7,6 +7,7 @@ const {
 const { getApi } = require("./controllers/api.controllers");
 const {
 	getCommentsByReview_id,
+	removeCommentByComment_id,
 } = require("./controllers/comments.controllers");
 const app = express();
 
@@ -19,6 +20,8 @@ app.get("/api/reviews", getReviews);
 app.get("/api", getApi);
 
 app.get("/api/reviews/:review_id/comments", getCommentsByReview_id);
+
+app.delete("/api/comments/:comment_id", removeCommentByComment_id);
 
 app.use((err, req, res, next) => {
 	if (err.code === "22P02") {
