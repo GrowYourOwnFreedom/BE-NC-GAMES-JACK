@@ -168,6 +168,26 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 				expect(typeof comment.created_at).toBe("string");
 			});
 	});
+	test("POST 201 adds comment to database, returns comment obj even if it contains unnecessary props, which are ignored", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+			unnecessary: "this prop is unnecessary",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment.body).toBe("this review is so pointless!");
+				expect(comment.votes).toBe(0);
+				expect(comment.review_id).toBe(1);
+				expect(comment.comment_id).toBe(7);
+				expect(comment.author).toBe("bainesface");
+				expect(typeof comment.created_at).toBe("string");
+			});
+	});
+
 	test('POST 404- "sorry, review_id not found!"', () => {
 		const testComment = {
 			username: "bainesface",
@@ -194,7 +214,7 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 				expect(response.body.msg).toBe("sorry, username not found!");
 			});
 	});
-	test("POST 400- bad request!", () => {
+	test("POST 400- object missing required props!", () => {
 		const testComment = {
 			username: "bainesface",
 			body: "this review is so pointless!",
