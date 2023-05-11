@@ -7,8 +7,11 @@ const {
 const { getApi } = require("./controllers/api.controllers");
 const {
 	getCommentsByReview_id,
+	postCommentByReview_id,
 } = require("./controllers/comments.controllers");
 const app = express();
+
+app.use(express.json());
 
 app.get("/api/categories", getCategories);
 
@@ -20,9 +23,17 @@ app.get("/api", getApi);
 
 app.get("/api/reviews/:review_id/comments", getCommentsByReview_id);
 
+app.post("/api/reviews/:review_id/comments", postCommentByReview_id);
+
 app.use((err, req, res, next) => {
 	if (err.code === "22P02") {
 		res.status(400).send({ msg: "bad request!" });
+	} else next(err);
+});
+
+app.use((err, req, res, next) => {
+	if (err.code === "23503") {
+		res.status(404).send({ msg: "not found!" });
 	} else next(err);
 });
 
