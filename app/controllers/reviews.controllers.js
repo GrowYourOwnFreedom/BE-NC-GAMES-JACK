@@ -23,7 +23,9 @@ exports.getReviews = (req, res, next) => {
 };
 
 exports.patchReviewVotes = (req, res, next) => {
-	updateReviewVotes(req.params.review_id, req.body).then((review) => {
-		res.status(200).send({ review });
-	});
+	updateReviewVotes(req.params.review_id, req.body)
+		.then((review) => {
+			res.status(200).send({ review });
+		})
+		.catch(next);
 };
