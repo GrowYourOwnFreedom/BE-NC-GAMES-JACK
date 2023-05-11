@@ -148,3 +148,15 @@ describe("GET /api/reviews", () => {
 			});
 	});
 });
+
+describe("PATCH /api/reviews/:review_id", () => {
+	test("PATCH status 200 vote count is updated", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({ inc_votes: 1 })
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+});
