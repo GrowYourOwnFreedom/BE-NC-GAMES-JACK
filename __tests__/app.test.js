@@ -148,7 +148,6 @@ describe("GET /api/reviews", () => {
 			});
 	});
 });
-
 describe("POST /api/reviews/:review_id/comments. accepts an obj with username and body properties", () => {
 	test("POST 201 adds comment to database, returns comment obj", () => {
 		const testComment = {
@@ -239,3 +238,57 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 			});
 	});
 });
+describe("PATCH /api/reviews/:review_id", () => {
+	test("PATCH status 200 vote count is updated", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({ inc_votes: 1 })
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({
+				inc_votes: 1,
+				unnecessary: "this property should have no effect",
+			})
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+
+	test("PATCH status 404 review_id not found", () => {
+		return request(app)
+			.patch("/api/reviews/20")
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test("PATCH status 400 id is not a number", () => {
+		return request(app)
+			.patch("/api/reviews/nonsense")
+			.send({ inc_votes: 1 })
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("PATCH status 400 invalid object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"bad request! body object must include 'inc_votes' property whose value must be a number "
+				);
+			});
+	});
+});
+
