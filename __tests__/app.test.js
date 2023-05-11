@@ -166,4 +166,20 @@ describe("DELETE /api/comments/:comment_id", () => {
 				expect(result.rows.length).toBe(0);
 			});
 	});
+	test("DELETE status 404 comment_id not found", () => {
+		return request(app)
+			.delete("/api/comments/20")
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, comment_id not found!");
+			});
+	});
+	test("DELETE status 40o comment_id not number", () => {
+		return request(app)
+			.delete("/api/comments/nonsense")
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
 });

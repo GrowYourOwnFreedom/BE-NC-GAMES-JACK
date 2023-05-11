@@ -1,5 +1,5 @@
 const db = require("../../db/connection");
-const { checkReview_idExists } = require("../utils");
+const { checkReview_idExists, checkComment_idExists } = require("../utils");
 exports.selectCommentsByReview_id = (id) => {
 	return checkReview_idExists(id)
 		.then(() => {
@@ -18,10 +18,11 @@ exports.selectCommentsByReview_id = (id) => {
 };
 
 exports.deleteCommentByComment_id = (id) => {
-	console.log(id);
-	return db.query(
-		`DELETE  FROM comments
-	WHERE comment_id = $1;`,
-		[id]
-	);
+	return checkComment_idExists(id).then(() => {
+		return db.query(
+			`DELETE  FROM comments
+		WHERE comment_id = $1;`,
+			[id]
+		);
+	});
 };
