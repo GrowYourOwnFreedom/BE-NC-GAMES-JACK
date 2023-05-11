@@ -60,7 +60,7 @@ describe("GET /api/reviews/:review_id", () => {
 			.get("/api/reviews/10000")
 			.expect(404)
 			.then((response) => {
-				expect(response.body.msg).toBe("not found!");
+				expect(response.body.msg).toBe("sorry, review_id not found!");
 			});
 	});
 	test("GET status 400: should return {msg: bad request! if id is not a number", () => {
@@ -106,7 +106,7 @@ describe("GET-/api/reviews/:review_id/comments", () => {
 			.get("/api/reviews/20/comments")
 			.expect(404)
 			.then((response) => {
-				expect(response.body.msg).toBe("review_id not found!");
+				expect(response.body.msg).toBe("sorry, review_id not found!");
 			});
 	});
 	test('GET-status 400 "bad request!" ', () => {
@@ -143,7 +143,7 @@ describe("GET /api/reviews", () => {
 					expect(typeof review.review_id).toBe("number");
 					expect(typeof review.votes).toBe("number");
 					expect(typeof review.comment_count).toBe("string");
-					expect(typeof review.review_body).toBe("undefined");
+					expect(review).not.toHaveProperty("review_body");
 				});
 				expect(response.body.reviews).toBeSortedBy("created_at", {
 					descending: true,
