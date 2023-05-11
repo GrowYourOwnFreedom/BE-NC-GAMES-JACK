@@ -159,4 +159,13 @@ describe("PATCH /api/reviews/:review_id", () => {
 				expect(response.body.review.votes).toBe(2);
 			});
 	});
+	test("PATCH status 404 review_id not found", () => {
+		return request(app)
+			.patch("/api/reviews/20")
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
 });
