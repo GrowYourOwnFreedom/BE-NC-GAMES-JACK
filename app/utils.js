@@ -18,7 +18,6 @@ exports.checkReview_idExists = (id) => {
 		});
 };
 
-
 exports.checkComment_idExists = (id) => {
 	return db
 		.query(
@@ -52,6 +51,25 @@ exports.checkUsernameExists = (username) => {
 				return Promise.reject({
 					status: 404,
 					msg: "sorry, username not found!",
+				});
+			}
+		});
+};
+
+exports.checkCoulmnValueInTable = (column, value, table) => {
+	return db
+		.query(
+			`
+    SELECT * FROM ${table}
+    WHERE ${column} = $1;
+    `,
+			[value]
+		)
+		.then((result) => {
+			if (result.rows.length === 0) {
+				return Promise.reject({
+					status: 404,
+					msg: `sorry, ${column} not found!`,
 				});
 			}
 		});
