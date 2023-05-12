@@ -73,7 +73,7 @@ describe("GET /api/reviews/:review_id", () => {
 			.then(({ body: { review } }) => {
 				console.log(review);
 				expect(typeof review.comment_count).toBe("string");
-				expect(review.comment_count).toBe(3);
+				expect(review.comment_count).toBe("3");
 			});
 	});
 });
