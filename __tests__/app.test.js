@@ -318,7 +318,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 				expect(response.body.msg).toBe("sorry, comment_id not found!");
 			});
 	});
-	test("DELETE status 40o comment_id not number", () => {
+	test("DELETE status 400 comment_id not number", () => {
 		return request(app)
 			.delete("/api/comments/nonsense")
 			.expect(400)
