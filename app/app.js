@@ -14,6 +14,7 @@ const {
 	postCommentByReview_id,
 
 } = require("./controllers/comments.controllers");
+const { getUsers } = require("./controllers/users.controllers");
 const app = express();
 
 app.use(express.json());
@@ -28,11 +29,15 @@ app.get("/api/reviews", getReviews);
 
 app.get("/api/reviews/:review_id/comments", getCommentsByReview_id);
 
+
+app.get("/api/users", getUsers);
+
 app.post("/api/reviews/:review_id/comments", postCommentByReview_id);
 
 app.patch("/api/reviews/:review_id", patchReviewVotes);
 
 app.delete("/api/comments/:comment_id", removeCommentByComment_id);
+
 
 app.use((err, req, res, next) => {
 	if (err.code === "22P02") {
