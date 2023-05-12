@@ -24,6 +24,6 @@ Double check that these .env files are .gitignored.
 The required nvironment variables are set by passing dotenv a config object with the correct path, determined by the environment you are operating in at the time (eg. test or development).
 This is done in the connection file before the pool is exported.
 
-T run this code you will need to make sure to install the following applications:
+To run this code you will need to make sure to install the following applications:
 Node.js v19.7.0
 psql 15.2
