@@ -69,7 +69,6 @@ exports.selectReviews = (category, sort_by = "created_at", order = "DESC") => {
 				msg: "sorry, category not found!",
 			});
 		}
-		console.log(response.rows);
 		return response.rows;
 	});
 };
