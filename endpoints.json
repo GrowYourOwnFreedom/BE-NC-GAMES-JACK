@@ -15,7 +15,7 @@
 		}
 	},
 	"GET /api/reviews": {
-		"description": "serves an array of all reviews",
+		"description": "serves an array of all reviews, can be sorted by any of the following columns, owner ,title, review_id, category, review_img_url, created_at, votes, designer, comment_count. order can be either ASC or DESC",
 		"queries": ["category", "sort_by", "order"],
 		"exampleResponse": {
 			"reviews": [
@@ -117,6 +117,7 @@
 		}
 	},
 	"DELETE /api/comments/:comment_id": {
+
 		"description": "deleteS the given comment by comment_id parametric endpoint",
 		"queries": []
 	},
@@ -130,5 +131,6 @@
 				"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
 			}
 		]
+
 	}
 }
