@@ -406,7 +406,7 @@ describe("GET /api/users", () => {
 	});
 });
 
-describe.only("GET /api/users/:username", () => {
+describe("GET /api/users/:username", () => {
 	test("GET status 200 responds with correct user obj", () => {
 		return request(app)
 			.get("/api/users/dav3rid")
