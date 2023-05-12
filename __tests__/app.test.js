@@ -68,7 +68,7 @@ describe("GET /api/reviews/:review_id", () => {
 	});
 });
 
-describe.only("GET /api/reviews", () => {
+describe("GET /api/reviews", () => {
 	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
 		return request(app)
 			.get("/api/reviews")
