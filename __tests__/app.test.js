@@ -66,6 +66,14 @@ describe("GET /api/reviews/:review_id", () => {
 				expect(response.body.msg).toBe("bad request!");
 			});
 	});
+	test("GET status 200 should have property comment_count", () => {
+		return request(app)
+			.get("/api/reviews/10")
+			.expect(200)
+			.then(({ body: { review } }) => {
+				expect(typeof review.comment_count).toBe("string");
+			});
+	});
 });
 
 describe("GET /api/reviews", () => {
