@@ -79,6 +79,7 @@
 				}
 			]
 		}
+
 	},
 	"POST /api/reviews/:review_id/comments": {
 		"description": "adds a comment to database based on review_id parametric endpoint. accepts an object with username and body properties which must be strings",
@@ -115,5 +116,6 @@
 				"votes": 2
 			}
 		}
+
 	}
 }

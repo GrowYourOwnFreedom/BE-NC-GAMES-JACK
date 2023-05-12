@@ -292,3 +292,38 @@ describe("PATCH /api/reviews/:review_id", () => {
 			});
 	});
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+	test("DELETE status 204 should delete the relevant comment ", () => {
+		return request(app)
+			.delete("/api/comments/5")
+			.expect(204)
+			.then(() => {
+				return db.query(
+					`
+			SELECT * FROM comments
+			WHERE comment_id = 5;
+			`
+				);
+			})
+			.then((result) => {
+				expect(result.rows.length).toBe(0);
+			});
+	});
+	test("DELETE status 404 comment_id not found", () => {
+		return request(app)
+			.delete("/api/comments/20")
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, comment_id not found!");
+			});
+	});
+	test("DELETE status 40o comment_id not number", () => {
+		return request(app)
+			.delete("/api/comments/nonsense")
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+});

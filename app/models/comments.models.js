@@ -1,5 +1,9 @@
 const db = require("../../db/connection");
+
+const { checkReview_idExists, checkComment_idExists } = require("../utils");
+
 const { checkReview_idExists, checkUsernameExists } = require("../utils");
+
 exports.selectCommentsByReview_id = (id) => {
 	return checkReview_idExists(id)
 		.then(() => {
@@ -16,6 +20,16 @@ exports.selectCommentsByReview_id = (id) => {
 			return result.rows;
 		});
 };
+
+
+exports.deleteCommentByComment_id = (id) => {
+	return checkComment_idExists(id).then(() => {
+		return db.query(
+			`DELETE  FROM comments
+		WHERE comment_id = $1;`,
+			[id]
+		);
+	});
 
 exports.insertCommentByReview_id = (id, comment) => {
 	const { username, body } = comment;
@@ -42,4 +56,5 @@ exports.insertCommentByReview_id = (id, comment) => {
 		.then((result) => {
 			return result.rows[0];
 		});
+
 };
