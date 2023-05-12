@@ -68,6 +68,33 @@ describe("GET /api/reviews/:review_id", () => {
 	});
 });
 
+describe("GET /api/reviews", () => {
+	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
+		return request(app)
+			.get("/api/reviews")
+			.expect(200)
+			.then((response) => {
+				response.body.reviews.forEach((review) => {
+					expect(typeof review.owner).toBe("string");
+					expect(typeof review.title).toBe("string");
+					expect(typeof review.category).toBe("string");
+					expect(typeof review.review_img_url).toBe("string");
+					expect(typeof review.created_at).toBe("string");
+					expect(typeof review.designer).toBe("string");
+					expect(typeof review.review_id).toBe("number");
+					expect(typeof review.votes).toBe("number");
+					expect(typeof review.comment_count).toBe("string");
+					expect(review).not.toHaveProperty("review_body");
+				});
+				expect(response.body.reviews).toBeSortedBy("created_at", {
+					descending: true,
+					coerce: true,
+				});
+				expect(response.body.reviews[4].comment_count).toBe("3");
+			});
+	});
+});
+
 describe("GET-/api/reviews/:review_id/comments", () => {
 	test("should respond with an array of comments for the given review_id, most recent comments first ", () => {
 		return request(app)
@@ -122,29 +149,146 @@ describe("GET-/api/reviews/:review_id/comments", () => {
 	});
 });
 
-describe("GET /api/reviews", () => {
-	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
+describe("POST /api/reviews/:review_id/comments. accepts an obj with username and body properties", () => {
+	test("POST 201 adds comment to database, returns comment obj", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
 		return request(app)
-			.get("/api/reviews")
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment.body).toBe("this review is so pointless!");
+				expect(comment.votes).toBe(0);
+				expect(comment.review_id).toBe(1);
+				expect(comment.comment_id).toBe(7);
+				expect(comment.author).toBe("bainesface");
+				expect(typeof comment.created_at).toBe("string");
+			});
+	});
+	test("POST 201 adds comment to database, returns comment obj even if it contains unnecessary props, which are ignored", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+			unnecessary: "this prop is unnecessary",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment.body).toBe("this review is so pointless!");
+				expect(comment.votes).toBe(0);
+				expect(comment.review_id).toBe(1);
+				expect(comment.comment_id).toBe(7);
+				expect(comment.author).toBe("bainesface");
+				expect(typeof comment.created_at).toBe("string");
+			});
+	});
+	test('POST 404- "sorry, review_id not found!"', () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/20/comments")
+			.send(testComment)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test('POST 404- "sorry, username not found!"', () => {
+		const testComment = {
+			username: "nonsense",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send(testComment)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, username not found!");
+			});
+	});
+	test("POST 400- object missing required props!", () => {
+		const testComment = {
+			username: "bainesface",
+			body: "this review is so pointless!",
+		};
+		return request(app)
+			.post("/api/reviews/nonsense/comments")
+			.send(testComment)
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("POST 400- Not Acceptable!", () => {
+		return request(app)
+			.post("/api/reviews/1/comments")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"sorry, comment should be in the form of an obj with a username and a body property, both of which should be strings"
+				);
+			});
+	});
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+	test("PATCH status 200 vote count is updated", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({ inc_votes: 1 })
 			.expect(200)
 			.then((response) => {
-				response.body.reviews.forEach((review) => {
-					expect(typeof review.owner).toBe("string");
-					expect(typeof review.title).toBe("string");
-					expect(typeof review.category).toBe("string");
-					expect(typeof review.review_img_url).toBe("string");
-					expect(typeof review.created_at).toBe("string");
-					expect(typeof review.designer).toBe("string");
-					expect(typeof review.review_id).toBe("number");
-					expect(typeof review.votes).toBe("number");
-					expect(typeof review.comment_count).toBe("string");
-					expect(review).not.toHaveProperty("review_body");
-				});
-				expect(response.body.reviews).toBeSortedBy("created_at", {
-					descending: true,
-					coerce: true,
-				});
-				expect(response.body.reviews[4].comment_count).toBe("3");
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({
+				inc_votes: 1,
+				unnecessary: "this property should have no effect",
+			})
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+
+	test("PATCH status 404 review_id not found", () => {
+		return request(app)
+			.patch("/api/reviews/20")
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test("PATCH status 400 id is not a number", () => {
+		return request(app)
+			.patch("/api/reviews/nonsense")
+			.send({ inc_votes: 1 })
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("PATCH status 400 invalid object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"bad request! body object must include 'inc_votes' property whose value must be a number "
+				);
 			});
 	});
 });

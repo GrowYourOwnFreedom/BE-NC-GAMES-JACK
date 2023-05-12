@@ -20,14 +20,15 @@
 		"exampleResponse": {
 			"reviews": [
 				{
-					"title": "One Night Ultimate Werewolf",
-					"designer": "Akihisa Okui",
-					"owner": "happyamy2016",
-					"review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-					"category": "hidden-roles",
-					"created_at": "2018-05-30T15:59:13.341Z",
-					"votes": 0,
-					"comment_count": 6
+					"review_id": 1,
+					"title": "Agricola",
+					"category": "euro game",
+					"designer": "Uwe Rosenberg",
+					"owner": "mallionaire",
+					"review_body": "Farmyard fun!",
+					"review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+					"created_at": "2021-01-18T10:00:20.514Z",
+					"votes": 1
 				}
 			]
 		}
@@ -78,5 +79,43 @@
 				}
 			]
 		}
+
+	},
+	"POST /api/reviews/:review_id/comments": {
+		"description": "adds a comment to database based on review_id parametric endpoint. accepts an object with username and body properties which must be strings",
+		"queries": [],
+		"exampleBody": {
+			"username": "bainesface",
+			"body": "this review is so pointless!"
+		},
+		"exampleResponse": {
+			"comment": {
+				"comment_id": 7,
+				"body": "this review is so pointless!",
+				"review_id": 1,
+				"author": "bainesface",
+				"votes": 0,
+				"created_at": "2023-05-12T07:40:39.496Z"
+			}
+		}
+	},
+	"PATCH /api/reviews/:review_id": {
+		"description": "updates the vote count of a specific review based on review_id parametric endpoint. accepts an object with inc_votes property which must be a number which can be positive or negative",
+		"queries": [],
+		"exampleBody": { "inc_votes": 1 },
+		"exampleResponse": {
+			"review": {
+				"review_id": 1,
+				"title": "Agricola",
+				"category": "euro game",
+				"designer": "Uwe Rosenberg",
+				"owner": "mallionaire",
+				"review_body": "Farmyard fun!",
+				"review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+				"created_at": "2021-01-18T10:00:20.514Z",
+				"votes": 2
+			}
+		}
+
 	}
 }
