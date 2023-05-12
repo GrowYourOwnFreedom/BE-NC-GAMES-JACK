@@ -93,6 +93,58 @@ describe("GET /api/reviews", () => {
 				expect(response.body.reviews[4].comment_count).toBe("3");
 			});
 	});
+	test("GET status 200- returns reviews that match the category query", () => {
+		return request(app)
+			.get("/api/reviews?category=dexterity")
+			.expect(200)
+			.then((response) => {
+				response.body.reviews.forEach((review) => {
+					expect(review.category).toBe("dexterity");
+				});
+			});
+	});
+	test("GET status 200- returns reviews sorted by any valid coulumn, defaults to date ", () => {
+		return request(app)
+			.get("/api/reviews?sort_by=title")
+			.expect(200)
+			.then((response) => {
+				expect(response.body.reviews).toBeSortedBy("title", {
+					descending: true,
+				});
+			});
+	});
+	test("GET status 200- returns reviews ordered ASC OR DESC defaults to DESC  ", () => {
+		return request(app)
+			.get("/api/reviews?order=ASC")
+			.expect(200)
+			.then((response) => {
+				expect(response.body.reviews).toBeSortedBy("created_at");
+			});
+	});
+	test("GET status: 400 invalid sort query", () => {
+		return request(app)
+			.get("/api/reviews?sort_by=nonsense")
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, invalid sort query!");
+			});
+	});
+	test("GET status: 400 invalid sort query", () => {
+		return request(app)
+			.get("/api/reviews?order=nonsense")
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, invalid order query!");
+			});
+	});
+	test("GET status: 404 category not found!", () => {
+		return request(app)
+			.get("/api/reviews?category=nonsense")
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, category not found!");
+			});
+	});
 });
 
 describe("GET-/api/reviews/:review_id/comments", () => {
