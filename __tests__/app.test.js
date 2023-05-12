@@ -68,6 +68,33 @@ describe("GET /api/reviews/:review_id", () => {
 	});
 });
 
+describe("GET /api/reviews", () => {
+	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
+		return request(app)
+			.get("/api/reviews")
+			.expect(200)
+			.then((response) => {
+				response.body.reviews.forEach((review) => {
+					expect(typeof review.owner).toBe("string");
+					expect(typeof review.title).toBe("string");
+					expect(typeof review.category).toBe("string");
+					expect(typeof review.review_img_url).toBe("string");
+					expect(typeof review.created_at).toBe("string");
+					expect(typeof review.designer).toBe("string");
+					expect(typeof review.review_id).toBe("number");
+					expect(typeof review.votes).toBe("number");
+					expect(typeof review.comment_count).toBe("string");
+					expect(review).not.toHaveProperty("review_body");
+				});
+				expect(response.body.reviews).toBeSortedBy("created_at", {
+					descending: true,
+					coerce: true,
+				});
+				expect(response.body.reviews[4].comment_count).toBe("3");
+			});
+	});
+});
+
 describe("GET-/api/reviews/:review_id/comments", () => {
 	test("should respond with an array of comments for the given review_id, most recent comments first ", () => {
 		return request(app)
@@ -122,32 +149,6 @@ describe("GET-/api/reviews/:review_id/comments", () => {
 	});
 });
 
-describe("GET /api/reviews", () => {
-	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
-		return request(app)
-			.get("/api/reviews")
-			.expect(200)
-			.then((response) => {
-				response.body.reviews.forEach((review) => {
-					expect(typeof review.owner).toBe("string");
-					expect(typeof review.title).toBe("string");
-					expect(typeof review.category).toBe("string");
-					expect(typeof review.review_img_url).toBe("string");
-					expect(typeof review.created_at).toBe("string");
-					expect(typeof review.designer).toBe("string");
-					expect(typeof review.review_id).toBe("number");
-					expect(typeof review.votes).toBe("number");
-					expect(typeof review.comment_count).toBe("string");
-					expect(review).not.toHaveProperty("review_body");
-				});
-				expect(response.body.reviews).toBeSortedBy("created_at", {
-					descending: true,
-					coerce: true,
-				});
-				expect(response.body.reviews[4].comment_count).toBe("3");
-			});
-	});
-});
 describe("POST /api/reviews/:review_id/comments. accepts an obj with username and body properties", () => {
 	test("POST 201 adds comment to database, returns comment obj", () => {
 		const testComment = {
@@ -186,7 +187,6 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 				expect(typeof comment.created_at).toBe("string");
 			});
 	});
-
 	test('POST 404- "sorry, review_id not found!"', () => {
 		const testComment = {
 			username: "bainesface",
@@ -238,6 +238,7 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 			});
 	});
 });
+
 describe("PATCH /api/reviews/:review_id", () => {
 	test("PATCH status 200 vote count is updated", () => {
 		return request(app)
@@ -291,4 +292,3 @@ describe("PATCH /api/reviews/:review_id", () => {
 			});
 	});
 });
-
