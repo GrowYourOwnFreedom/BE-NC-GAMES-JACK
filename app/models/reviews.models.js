@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+const { checkReview_idExists } = require("../utils");
 
 exports.selectReviewsById = (id) => {
 	return db
@@ -32,5 +33,30 @@ exports.selectReviews = () => {
 		)
 		.then((response) => {
 			return response.rows;
+		});
+};
+
+exports.updateReviewVotes = (id, body) => {
+	if (typeof body.inc_votes !== "number") {
+		return Promise.reject({
+			status: 400,
+			msg: "bad request! body object must include 'inc_votes' property whose value must be a number ",
+		});
+	}
+
+	return checkReview_idExists(id)
+		.then(() => {
+			return db.query(
+				`
+			UPDATE reviews
+			SET votes = votes + $1
+			WHERE review_id = $2
+			RETURNING * ;
+			`,
+				[body.inc_votes, id]
+			);
+		})
+		.then((result) => {
+			return result.rows[0];
 		});
 };
