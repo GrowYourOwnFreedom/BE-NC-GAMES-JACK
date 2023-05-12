@@ -117,7 +117,20 @@
 		}
 	},
 	"DELETE /api/comments/:comment_id": {
-		"description": "deletes comment defined by parametric endpoint comment_id",
+
+		"description": "deleteS the given comment by comment_id parametric endpoint",
 		"queries": []
+	},
+	"GET /api/users": {
+		"description": "serves an array of all the user objects in the database",
+		"queries": [],
+		"exampleResponse": [
+			{
+				"username": "mallionaire",
+				"name": "haz",
+				"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+			}
+		]
+
 	}
 }
