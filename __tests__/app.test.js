@@ -430,7 +430,7 @@ describe("GET /api/users/:username", () => {
 	});
 });
 
-describe.only("PATCH /api/comments/:comment_id", () => {
+describe("PATCH /api/comments/:comment_id", () => {
 	test("PATCH status 200 vote count is updated", () => {
 		return request(app)
 			.patch("/api/comments/1")
