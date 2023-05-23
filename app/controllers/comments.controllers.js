@@ -4,6 +4,7 @@ const {
 	deleteCommentByComment_id,
 
 	insertCommentByReview_id,
+	updateCommentVotes,
 } = require("../models/comments.models");
 
 exports.getCommentsByReview_id = (req, res, next) => {
@@ -29,3 +30,9 @@ exports.postCommentByReview_id = (req, res, next) => {
 		})
 		.catch(next);
 };
+
+exports.patchCommentByComment_id = (req, res, next) => {
+	updateCommentVotes(req.params.comment_id, req.body).then(comment => {
+		res.status(200).send({ comment })
+	}).catch(next)
+}

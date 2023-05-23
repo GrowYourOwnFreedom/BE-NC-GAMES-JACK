@@ -59,3 +59,27 @@ exports.insertCommentByReview_id = (id, comment) => {
 			return result.rows[0];
 		});
 };
+
+exports.updateCommentVotes = (id, body) => {
+	if (typeof body.inc_votes !== "number") {
+		return Promise.reject({
+			status: 400,
+			msg: "bad request! body object must include 'inc_votes' property whose value must be a number ",
+		});
+	}
+	return checkComment_idExists(id)
+		.then(() => {
+			return db.query(
+				`
+			UPDATE comments
+			SET votes = votes + $1
+			WHERE comment_id = $2
+			RETURNING * ;
+			`,
+				[body.inc_votes, id]
+			);
+		})
+		.then((result) => {
+			return result.rows[0];
+		});
+};

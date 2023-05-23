@@ -429,3 +429,57 @@ describe("GET /api/users/:username", () => {
 			});
 	});
 });
+
+describe.only("PATCH /api/comments/:comment_id", () => {
+	test("PATCH status 200 vote count is updated", () => {
+		return request(app)
+			.patch("/api/comments/1")
+			.send({ inc_votes: 1 })
+			.expect(200)
+			.then((response) => {
+				expect(response.body.comment.votes).toBe(17);
+			});
+	});
+	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
+		return request(app)
+			.patch("/api/comments/1")
+			.send({
+				inc_votes: 1,
+				unnecessary: "this property should have no effect",
+			})
+			.expect(200)
+			.then((response) => {
+				expect(response.body.comment.votes).toBe(17);
+			});
+	});
+
+	test("PATCH status 404 comment_id not found", () => {
+		return request(app)
+			.patch("/api/comments/20")
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, comment_id not found!");
+			});
+	});
+	test("PATCH status 400 id is not a number", () => {
+		return request(app)
+			.patch("/api/comments/nonsense")
+			.send({ inc_votes: 1 })
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("PATCH status 400 invalid object", () => {
+		return request(app)
+			.patch("/api/comments/1")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"bad request! body object must include 'inc_votes' property whose value must be a number "
+				);
+			});
+	});
+});
