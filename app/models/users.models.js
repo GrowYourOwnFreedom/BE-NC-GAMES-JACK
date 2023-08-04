@@ -21,7 +21,6 @@ exports.selectUsersByUsername = (username) => {
 			[username]
 		)
 		.then((response) => {
-			console.log(response);
 			if (response.rows.length === 0) {
 				return Promise.reject({
 					status: 404,
