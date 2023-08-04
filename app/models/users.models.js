@@ -1,3 +1,4 @@
+const { password } = require("pg/lib/defaults");
 const db = require("../../db/connection");
 const { checkUsernameExists, checkUsernameDoesentExist } = require("../utils");
 const bcrypt = require("bcrypt");
@@ -13,24 +14,32 @@ exports.selectUsers = () => {
 			return result.rows;
 		});
 };
-exports.selectUsersByUsername = (username) => {
-	return db
-		.query(
-			`
-	SELECT * FROM users
-	WHERE username = $1
-	`,
-			[username]
-		)
-		.then((response) => {
-			if (response.rows.length === 0) {
-				return Promise.reject({
-					status: 404,
-					msg: "sorry, username not found!",
-				});
+exports.selectUsersByUsername = ( username, password ) => {
+	return checkUsernameExists(username).then(()=>{
+
+		return db
+			.query(
+				`
+		SELECT * FROM users
+		WHERE username = $1
+		`,
+				[username]
+			)
+	}).then((result) => {
+		const user = result.rows[0]
+		const hashedPassword = user.password
+		delete user.password
+		return bcrypt.compare(password, hashedPassword).then((isPasswordMatch) => {
+			if (isPasswordMatch) {
+			  return user;
+			} else {
+			  return Promise.reject({
+				status: 401,
+				msg: "Invalid password!",
+			  });
 			}
-			return response.rows[0];
-		});
+		  });
+		})
 };
 
 exports.insertUser = async (user) => {

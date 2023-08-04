@@ -101,7 +101,7 @@
 		"queries": [],
 		"exampleBody": { "username": "mallionaire" }
 	},
-	
+
 	"GET /api/reviews/:review_id/comments": {
 		"description": "serves an array of comments for the given review_id, ordered by most recent comments first",
 		"queries": [],
@@ -185,9 +185,12 @@
 			}
 		]
 	},
-	"GET /api/users/:username": {
-		"description": "serves a user obj for given username",
+	"POST /api/users/:username": {
+		"description": "serves a user obj for given username if password matches",
 		"queries": [],
+		"exampleBody" : {
+		"password"	: "Password1"
+		},
 		"exampleResponse": {
 			"user": {
 				"username": "dav3rid",

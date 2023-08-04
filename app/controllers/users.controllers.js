@@ -13,7 +13,7 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getUsersByUsername = (req, res, next) => {
-	selectUsersByUsername(req.params.username)
+	selectUsersByUsername(req.params.username, req.body.password)
 		.then((user) => {
 			res.status(200).send({ user });
 		})

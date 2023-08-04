@@ -19,6 +19,7 @@ module.exports = [
     username: 'dav3rid',
     name: 'dave',
     avatar_url:
-      'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+      'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+      password: "$2b$10$Zj07vq61lNxaFJCuJ0bFrOTlCQJA0lP1m01DTU8/3Nex5m.Iv03Pe"
   }
 ];

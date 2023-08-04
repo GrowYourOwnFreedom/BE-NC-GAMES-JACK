@@ -8,6 +8,17 @@ const { expect } = require("@jest/globals");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
+describe("GET- /api", () => {
+	test("GET: status 200 Responds with JSON describing all the available endpoints", () => {
+		return request(app)
+			.get("/api")
+			.expect(200)
+			.then(({ body: endpoints }) => {
+				expect(typeof endpoints).toBe("object");
+			});
+	});
+});
+
 describe("GET-/api/categories", () => {
 	test("GET status 200, should return an array of category objects, each of which should have the following properties: slug, description", () => {
 		return request(app)
@@ -23,82 +34,7 @@ describe("GET-/api/categories", () => {
 	});
 });
 
-describe("GET- /api", () => {
-	test("GET: status 200 Responds with JSON describing all the available endpoints", () => {
-		return request(app)
-			.get("/api")
-			.expect(200)
-			.then(({ body: endpoints }) => {
-				expect(typeof endpoints).toBe("object");
-			});
-	});
-});
 
-describe("GET /api/reviews/:review_id", () => {
-	test("GET status 200 Responds with a review object,", () => {
-		return request(app)
-			.get("/api/reviews/10")
-			.expect(200)
-			.then(({ body: { review } }) => {
-				expect(typeof review.title).toBe("string");
-				expect(typeof review.designer).toBe("string");
-				expect(typeof review.owner).toBe("string");
-				expect(typeof review.review_img_url).toBe("string");
-				expect(typeof review.review_body).toBe("string");
-				expect(typeof review.category).toBe("string");
-				expect(typeof review.created_at).toBe("string");
-				expect(typeof review.votes).toBe("number");
-				expect(review.review_id).toBe(10);
-			});
-	});
-	test("GET status 404 should return {msg: not found!} if id doesent exist ", () => {
-		return request(app)
-			.get("/api/reviews/10000")
-			.expect(404)
-			.then((response) => {
-				expect(response.body.msg).toBe("sorry, review_id not found!");
-			});
-	});
-	test("GET status 400: should return {msg: bad request! if id is not a number", () => {
-		return request(app)
-			.get("/api/reviews/nonsense")
-			.expect(400)
-			.then((response) => {
-				expect(response.body.msg).toBe("bad request!");
-			});
-	});
-	test("GET status 200 should have property comment_count with correct number of comments", () => {
-		return request(app)
-			.get("/api/reviews/3")
-			.expect(200)
-			.then(({ body: { review } }) => {
-				expect(typeof review.comment_count).toBe("string");
-				expect(review.comment_count).toBe("3");
-			});
-	});
-});
-
-describe("DELETE /api/reviews/:review_id", () => {
-	test("DELETE --204 -- should remove a review if review_id exists and it matches username", () => {
-		testBody = { username: "mallionaire" };
-
-		return request(app)
-			.delete("/api/reviews/4")
-			.send(testBody)
-			.expect(204)
-			.then(() => {
-				return db.query(
-					`
-	SELECT * FROM reviews
-	WHERE review_id = 4;
-	`
-				);
-			})
-			.then((result) => {
-				expect(result.rows.length).toBe(0);
-			});
-	});
-});
 
 describe("GET /api/reviews", () => {
 	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
@@ -269,6 +205,128 @@ describe("POST /api/reviews  accetpts review obj", () => {
 	});
 });
 
+describe("GET /api/reviews/:review_id", () => {
+	test("GET status 200 Responds with a review object,", () => {
+		return request(app)
+			.get("/api/reviews/10")
+			.expect(200)
+			.then(({ body: { review } }) => {
+				expect(typeof review.title).toBe("string");
+				expect(typeof review.designer).toBe("string");
+				expect(typeof review.owner).toBe("string");
+				expect(typeof review.review_img_url).toBe("string");
+				expect(typeof review.review_body).toBe("string");
+				expect(typeof review.category).toBe("string");
+				expect(typeof review.created_at).toBe("string");
+				expect(typeof review.votes).toBe("number");
+				expect(review.review_id).toBe(10);
+			});
+	});
+	test("GET status 404 should return {msg: not found!} if id doesent exist ", () => {
+		return request(app)
+			.get("/api/reviews/10000")
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test("GET status 400: should return {msg: bad request! if id is not a number", () => {
+		return request(app)
+			.get("/api/reviews/nonsense")
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("GET status 200 should have property comment_count with correct number of comments", () => {
+		return request(app)
+			.get("/api/reviews/3")
+			.expect(200)
+			.then(({ body: { review } }) => {
+				expect(typeof review.comment_count).toBe("string");
+				expect(review.comment_count).toBe("3");
+			});
+	});
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+	test("PATCH status 200 vote count is updated", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({ inc_votes: 1 })
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({
+				inc_votes: 1,
+				unnecessary: "this property should have no effect",
+			})
+			.expect(200)
+			.then((response) => {
+				expect(response.body.review.votes).toBe(2);
+			});
+	});
+
+	test("PATCH status 404 review_id not found", () => {
+		return request(app)
+			.patch("/api/reviews/20")
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review_id not found!");
+			});
+	});
+	test("PATCH status 400 id is not a number", () => {
+		return request(app)
+			.patch("/api/reviews/nonsense")
+			.send({ inc_votes: 1 })
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("bad request!");
+			});
+	});
+	test("PATCH status 400 invalid object", () => {
+		return request(app)
+			.patch("/api/reviews/1")
+			.send({})
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe(
+					"bad request! body object must include 'inc_votes' property whose value must be a number "
+				);
+			});
+	});
+});
+
+describe("DELETE /api/reviews/:review_id", () => {
+	test("DELETE --204 -- should remove a review if review_id exists and it matches username", () => {
+		testBody = { username: "mallionaire" };
+
+		return request(app)
+			.delete("/api/reviews/4")
+			.send(testBody)
+			.expect(204)
+			.then(() => {
+				return db.query(
+					`
+	SELECT * FROM reviews
+	WHERE review_id = 4;
+	`
+				);
+			})
+			.then((result) => {
+				expect(result.rows.length).toBe(0);
+			});
+	});
+});
+
+
+
 describe("GET-/api/reviews/:review_id/comments", () => {
 	test("should respond with an array of comments for the given review_id, most recent comments first ", () => {
 		return request(app)
@@ -413,59 +471,7 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 	});
 });
 
-describe("PATCH /api/reviews/:review_id", () => {
-	test("PATCH status 200 vote count is updated", () => {
-		return request(app)
-			.patch("/api/reviews/1")
-			.send({ inc_votes: 1 })
-			.expect(200)
-			.then((response) => {
-				expect(response.body.review.votes).toBe(2);
-			});
-	});
-	test("PATCH status 200 vote count is updated even if there are unnecessary properties on the object", () => {
-		return request(app)
-			.patch("/api/reviews/1")
-			.send({
-				inc_votes: 1,
-				unnecessary: "this property should have no effect",
-			})
-			.expect(200)
-			.then((response) => {
-				expect(response.body.review.votes).toBe(2);
-			});
-	});
 
-	test("PATCH status 404 review_id not found", () => {
-		return request(app)
-			.patch("/api/reviews/20")
-			.send({ inc_votes: 1 })
-			.expect(404)
-			.then((response) => {
-				expect(response.body.msg).toBe("sorry, review_id not found!");
-			});
-	});
-	test("PATCH status 400 id is not a number", () => {
-		return request(app)
-			.patch("/api/reviews/nonsense")
-			.send({ inc_votes: 1 })
-			.expect(400)
-			.then((response) => {
-				expect(response.body.msg).toBe("bad request!");
-			});
-	});
-	test("PATCH status 400 invalid object", () => {
-		return request(app)
-			.patch("/api/reviews/1")
-			.send({})
-			.expect(400)
-			.then((response) => {
-				expect(response.body.msg).toBe(
-					"bad request! body object must include 'inc_votes' property whose value must be a number "
-				);
-			});
-	});
-});
 
 describe("DELETE /api/comments/:comment_id", () => {
 	test("DELETE status 204 should delete the relevant comment ", () => {
@@ -539,10 +545,14 @@ describe("POST /api/users", () => {
 	});
 });
 
-describe("GET /api/users/:username", () => {
-	test("GET status 200 responds with correct user obj", () => {
+describe("POST /api/users/:username", () => {
+	test("POST status 200 responds with correct user obj", () => {
+		const testUser = {
+			password: "Password1"
+		}
 		return request(app)
-			.get("/api/users/dav3rid")
+			.post("/api/users/dav3rid")
+			.send(testUser)
 			.expect(200)
 			.then(({ body: { user } }) => {
 				expect(user.username).toBe("dav3rid");
@@ -552,12 +562,28 @@ describe("GET /api/users/:username", () => {
 				);
 			});
 	});
-	test("GET status 404-username not found", () => {
+	test("POST status 404-username not found", () => {
+		const testUser = {
+			password: "Password1"
+		}
 		return request(app)
-			.get("/api/users/nonsense")
+			.post("/api/users/nonsense")
+			.send(testUser)
 			.expect(404)
 			.then((response) => {
 				expect(response.body.msg).toBe("sorry, username not found!");
+			});
+	});
+	test("POST status 401-incorrect password", () => {
+		const testUser = {
+			password: "Password2"
+		}
+		return request(app)
+			.post("/api/users/dav3rid")
+			.send(testUser)
+			.expect(401)
+			.then((response) => {
+				expect(response.body.msg).toBe("Invalid password!");
 			});
 	});
 });

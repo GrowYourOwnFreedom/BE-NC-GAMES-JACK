@@ -8,6 +8,6 @@ const usersRouter = require("express").Router();
 
 usersRouter.route("/").get(getUsers).post(postUser)
 
-usersRouter.get("/:username", getUsersByUsername);
+usersRouter.post("/:username", getUsersByUsername);
 
 module.exports = usersRouter;
