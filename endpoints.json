@@ -77,6 +77,31 @@
 			}
 		}
 	},
+	"PATCH /api/reviews/:review_id": {
+		"description": "updates the vote count of a specific review based on review_id parametric endpoint. accepts an object with inc_votes property which must be a number which can be positive or negative",
+		"queries": [],
+		"exampleBody": { "inc_votes": 1 },
+		"exampleResponse": {
+			"review": {
+				"review_id": 1,
+				"title": "Agricola",
+				"category": "euro game",
+				"designer": "Uwe Rosenberg",
+				"owner": "mallionaire",
+				"review_body": "Farmyard fun!",
+				"review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+				"created_at": "2021-01-18T10:00:20.514Z",
+				"votes": 2,
+				"comment_count": 0
+			}
+		}
+	},
+	"DELETE /api/reviews/:review_id": {
+		"description": "removes reviews if id and username match",
+		"queries": [],
+		"exampleBody": { "username": "mallionaire" }
+	},
+	
 	"GET /api/reviews/:review_id/comments": {
 		"description": "serves an array of comments for the given review_id, ordered by most recent comments first",
 		"queries": [],
@@ -127,25 +152,7 @@
 			}
 		}
 	},
-	"PATCH /api/reviews/:review_id": {
-		"description": "updates the vote count of a specific review based on review_id parametric endpoint. accepts an object with inc_votes property which must be a number which can be positive or negative",
-		"queries": [],
-		"exampleBody": { "inc_votes": 1 },
-		"exampleResponse": {
-			"review": {
-				"review_id": 1,
-				"title": "Agricola",
-				"category": "euro game",
-				"designer": "Uwe Rosenberg",
-				"owner": "mallionaire",
-				"review_body": "Farmyard fun!",
-				"review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
-				"created_at": "2021-01-18T10:00:20.514Z",
-				"votes": 2,
-				"comment_count": 0
-			}
-		}
-	},
+	
 	"DELETE /api/comments/:comment_id": {
 		"description": "deleteS the given comment by comment_id parametric endpoint",
 		"queries": []

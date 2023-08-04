@@ -78,6 +78,28 @@ describe("GET /api/reviews/:review_id", () => {
 	});
 });
 
+describe("DELETE /api/reviews/:review_id", () => {
+	test("DELETE --204 -- should remove a review if review_id exists and it matches username", () => {
+		testBody = { username: "mallionaire" };
+
+		return request(app)
+			.delete("/api/reviews/4")
+			.send(testBody)
+			.expect(204)
+			.then(() => {
+				return db.query(
+					`
+	SELECT * FROM reviews
+	WHERE review_id = 4;
+	`
+				);
+			})
+			.then((result) => {
+				expect(result.rows.length).toBe(0);
+			});
+	});
+});
+
 describe("GET /api/reviews", () => {
 	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
 		return request(app)

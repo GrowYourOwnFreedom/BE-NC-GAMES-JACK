@@ -134,12 +134,14 @@ exports.uploadReview = (review) => {
 		});
 };
 
-exports.deleteReviewByReview_id = (id) => {
-	return checkComment_idExists(id).then(() => {
+exports.deleteReviewByReview_id = ( id, username ) => {
+	return checkReview_idExists(id).then(() => {
+		if(username)
 		return db.query(
-			`DELETE  FROM comments
-		WHERE comment_id = $1;`,
-			[id]
+			`DELETE  FROM reviews
+		WHERE review_id = $1
+		AND owner = $2;`,
+			[id, username]
 		);
 	});
 };
