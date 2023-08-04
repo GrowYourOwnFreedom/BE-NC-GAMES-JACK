@@ -14,7 +14,7 @@
 			]
 		}
 	},
-	"Post /api/reviews": {
+	"POST /api/reviews": {
 		"description": "adds a review to the review table",
 		"queries": [],
 		"exampleBody": {
@@ -153,6 +153,23 @@
 	"GET /api/users": {
 		"description": "serves an array of all the user objects in the database",
 		"queries": [],
+		"exampleResponse": [
+			{
+				"username": "mallionaire",
+				"name": "haz",
+				"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+			}
+		]
+	},
+	"POST /api/users": {
+		"description": "adds a user to the database",
+		"queries": [],
+		"exampleBody": {
+			"username": "mallionaire",
+			"name": "haz",
+			"avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+			"password": "Password1"
+		},
 		"exampleResponse": [
 			{
 				"username": "mallionaire",

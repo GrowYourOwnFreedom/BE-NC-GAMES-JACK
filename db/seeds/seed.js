@@ -28,7 +28,8 @@ const seed = ({ categoryData, commentData, reviewData, userData }) => {
 			CREATE TABLE users (
 				username VARCHAR PRIMARY KEY,
 				name VARCHAR NOT NULL,
-				avatar_url VARCHAR
+				avatar_url VARCHAR,
+        password VARCHAR
 			);`);
 
       return Promise.all([topicsTablePromise, usersTablePromise]);

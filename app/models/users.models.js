@@ -1,4 +1,6 @@
 const db = require("../../db/connection");
+const { checkUsernameExists, checkUsernameDoesentExist } = require("../utils");
+const bcrypt = require("bcrypt");
 
 exports.selectUsers = () => {
 	return db
@@ -28,5 +30,26 @@ exports.selectUsersByUsername = (username) => {
 				});
 			}
 			return response.rows[0];
+		});
+};
+
+exports.insertUser = async (user) => {
+	const { username, password, name, avatar_url } = user;
+	return checkUsernameDoesentExist(username)
+		.then(() => {
+			return bcrypt.hash(password, 10);
+		})
+		.then((hashedPassword) => {
+			return db.query(
+				`
+			INSERT INTO users
+			(username, password, name, avatar_url )
+			VALUES ($1, $2, $3, $4) RETURNING *
+			`,
+				[username, hashedPassword, name, avatar_url]
+			);
+		})
+		.then((result) => {
+			return result.rows[0];
 		});
 };

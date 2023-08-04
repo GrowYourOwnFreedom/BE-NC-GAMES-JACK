@@ -133,3 +133,14 @@ exports.uploadReview = (review) => {
 			return result.rows[0];
 		});
 };
+
+exports.deleteReviewByReview_id = (id) => {
+	return checkComment_idExists(id).then(() => {
+		return db.query(
+			`DELETE  FROM comments
+		WHERE comment_id = $1;`,
+			[id]
+		);
+	});
+};
+
