@@ -14,6 +14,31 @@
 			]
 		}
 	},
+	"Post /api/reviews": {
+		"description": "adds a review to the review table",
+		"queries": [],
+		"exampleBody": {
+			"title": "test review",
+			"username": "mallionaire",
+			"body": "test review please delete when ready!",
+			"designer": "games designer",
+			"category": "dexterity",
+			"review_img_url": "https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700"
+		},
+		"exampleResponse": {
+			"review": {
+				"review_id": 14,
+				"title": "Test Review",
+				"category": "dexterity",
+				"designer": "games designer",
+				"owner": "mallionaire",
+				"review_body": "this is a test review, delet me when you get the chance!",
+				"review_img_url": "https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700",
+				"created_at": "2023-08-04T12:06:04.212Z",
+				"votes": 0
+			}
+		}
+	},
 	"GET /api/reviews": {
 		"description": "serves an array of all reviews, can be sorted by any of the following columns, owner ,title, review_id, category, review_img_url, created_at, votes, designer, comment_count. order can be either ASC or DESC",
 		"queries": ["category", "sort_by", "order"],
@@ -38,17 +63,18 @@
 		"description": "serves a review object determined by the parametric endpoint review_id where review_id is a valid review_id",
 		"queries": [],
 		"exampleResponse": {
-			"review_id": 10,
-			"title": "Build you own tour de Yorkshire",
-			"designer": "Asger Harding Granerud",
-			"owner": "mallionaire",
-			"review_img_url": "https://images.pexels.com/photos/258045/pexels-photo-258045.jpeg?w=700&h=700",
-			"review_body": "Cold rain pours on the faces of your team of cyclists, you pulled to the front of the pack early and now your taking on exhaustion cards like there is not tomorrow, you think there are about 2 hands left until you cross the finish line, will you draw enough from your deck to cross before the other team shoot passed? Flamee Rouge is a Racing deck management game where you carefully manage your deck in order to cross the line before your opponents, cyclist can fall slyly behind front runners in their slipstreams to save precious energy for the prefect moment to burst into the lead ",
-			"category": "social deduction",
-			"created_at": "2021-01-18T10:01:41.251Z",
-			"votes": 10,
-			"comment_count": 0
-
+			"review": {
+				"review_id": 10,
+				"title": "Build you own tour de Yorkshire",
+				"designer": "Asger Harding Granerud",
+				"owner": "mallionaire",
+				"review_img_url": "https://images.pexels.com/photos/258045/pexels-photo-258045.jpeg?w=700&h=700",
+				"review_body": "Cold rain pours on the faces of your team of cyclists, you pulled to the front of the pack early and now your taking on exhaustion cards like there is not tomorrow, you think there are about 2 hands left until you cross the finish line, will you draw enough from your deck to cross before the other team shoot passed? Flamee Rouge is a Racing deck management game where you carefully manage your deck in order to cross the line before your opponents, cyclist can fall slyly behind front runners in their slipstreams to save precious energy for the prefect moment to burst into the lead ",
+				"category": "social deduction",
+				"created_at": "2021-01-18T10:01:41.251Z",
+				"votes": 10,
+				"comment_count": 0
+			}
 		}
 	},
 	"GET /api/reviews/:review_id/comments": {

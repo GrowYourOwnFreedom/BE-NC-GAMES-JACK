@@ -1,5 +1,9 @@
 const db = require("../../db/connection");
-const { checkReview_idExists, checkCoulmnValueInTable } = require("../utils");
+const {
+	checkReview_idExists,
+	checkCoulmnValueInTable,
+	checkUsernameExists,
+} = require("../utils");
 
 exports.selectReviewsById = (id) => {
 	return db
@@ -91,6 +95,38 @@ exports.updateReviewVotes = (id, body) => {
 			RETURNING * ;
 			`,
 				[body.inc_votes, id]
+			);
+		})
+		.then((result) => {
+			return result.rows[0];
+		});
+};
+
+exports.uploadReview = (review) => {
+	const { username, body, title, category, designer, review_img_url } =
+		review;
+	if (
+		typeof body !== "string" ||
+		typeof title !== "string" ||
+		typeof username !== "string" ||
+		typeof category !== "string" ||
+		typeof designer !== "string" ||
+		typeof review_img_url !== "string"
+	) {
+		return Promise.reject({
+			status: 400,
+			msg: "sorry, review should be in the form of an obj with a username, body, title, category, designer and review_img_url properties, all of which should be strings",
+		});
+	}
+	return checkUsernameExists(username)
+		.then(() => {
+			return db.query(
+				`
+			INSERT INTO reviews
+	(title, owner, review_body, category, designer, review_img_url  )
+	VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+			`,
+				[title, username, body, category, designer, review_img_url]
 			);
 		})
 		.then((result) => {

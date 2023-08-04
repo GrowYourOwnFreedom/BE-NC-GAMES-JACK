@@ -156,6 +156,82 @@ describe("GET /api/reviews", () => {
 	});
 });
 
+describe('POST /api/reviews  accetpts review obj', ()=>{
+	test('POST 201 -- adds review to database, returns review obj', () => {
+		const testReview = {
+			body : "this is a test review, delet me when you get the chance!",
+			title: "Test Review",
+			username: "mallionaire",
+			category: "dexterity",
+			designer: "games designer",
+			review_img_url:       'https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700'
+		}
+		return request(app).post("/api/reviews").send(testReview).expect(201).then(({body: {review}})=>{
+			expect(typeof review.title).toBe('string');
+			expect(typeof review.owner).toBe('string');
+			expect(typeof review.review_body).toBe('string');
+			expect(typeof review.category).toBe('string');
+			expect(typeof review.designer).toBe('string');
+			expect(typeof review.review_img_url).toBe('string');
+		})
+	});
+
+	test('POST 201 -- ignores unecessary props', () => {
+		const testReview = {
+			date: "25/08/2023",
+			length: 50,
+			body : "this is a test review, delet me when you get the chance!",
+			title: "Test Review",
+			username: "mallionaire",
+			category: "dexterity",
+			designer: "games designer",
+			review_img_url:       'https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700'
+		}
+		return request(app).post("/api/reviews").send(testReview).expect(201).then(({body: {review}})=>{
+			expect(typeof review.title).toBe('string');
+			expect(typeof review.owner).toBe('string');
+			expect(typeof review.review_body).toBe('string');
+			expect(typeof review.category).toBe('string');
+			expect(typeof review.designer).toBe('string');
+			expect(typeof review.review_img_url).toBe('string');
+		})
+	});
+
+	test('POST 404- "sorry, username not found!"', () => {
+		const testReview = {
+			body : "this is a test review, delet me when you get the chance!",
+			title: "Test Review",
+			username: "nonsense",
+			category: "dexterity",
+			designer: "games designer",
+			review_img_url:       'https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700'
+		}
+		return request(app)
+			.post("/api/reviews")
+			.send(testReview)
+			.expect(404)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, username not found!");
+			});
+	});
+	test("POST 400- object missing required props!", () => {
+		const testReview = {
+			title: "Test Review",
+			username: "mallionaire",
+			category: "dexterity",
+			designer: "games designer",
+			review_img_url:       'https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700'
+		}
+		return request(app)
+			.post("/api/reviews")
+			.send(testReview)
+			.expect(400)
+			.then((response) => {
+				expect(response.body.msg).toBe("sorry, review should be in the form of an obj with a username, body, title, category, designer and review_img_url properties, all of which should be strings");
+			});
+	});
+})
+
 describe("GET-/api/reviews/:review_id/comments", () => {
 	test("should respond with an array of comments for the given review_id, most recent comments first ", () => {
 		return request(app)
@@ -210,6 +286,8 @@ describe("GET-/api/reviews/:review_id/comments", () => {
 	});
 });
 
+
+
 describe("POST /api/reviews/:review_id/comments. accepts an obj with username and body properties", () => {
 	test("POST 201 adds comment to database, returns comment obj", () => {
 		const testComment = {
@@ -228,6 +306,8 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 				expect(comment.author).toBe("bainesface");
 				expect(typeof comment.created_at).toBe("string");
 			});
+
+			
 	});
 	test("POST 201 adds comment to database, returns comment obj even if it contains unnecessary props, which are ignored", () => {
 		const testComment = {
