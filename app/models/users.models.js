@@ -14,32 +14,34 @@ exports.selectUsers = () => {
 			return result.rows;
 		});
 };
-exports.selectUsersByUsername = ( username, password ) => {
-	return checkUsernameExists(username).then(()=>{
-
-		return db
-			.query(
+exports.selectUsersByUsername = (username, password) => {
+	return checkUsernameExists(username)
+		.then(() => {
+			return db.query(
 				`
 		SELECT * FROM users
 		WHERE username = $1
 		`,
 				[username]
-			)
-	}).then((result) => {
-		const user = result.rows[0]
-		const hashedPassword = user.password
-		delete user.password
-		return bcrypt.compare(password, hashedPassword).then((isPasswordMatch) => {
-			if (isPasswordMatch) {
-			  return user;
-			} else {
-			  return Promise.reject({
-				status: 401,
-				msg: "Invalid password!",
-			  });
-			}
-		  });
+			);
 		})
+		.then((result) => {
+			const user = result.rows[0];
+			const hashedPassword = user.password;
+			delete user.password;
+			return bcrypt
+				.compare(password, hashedPassword)
+				.then((isPasswordMatch) => {
+					if (isPasswordMatch) {
+						return user;
+					} else {
+						return Promise.reject({
+							status: 401,
+							msg: "Invalid password!",
+						});
+					}
+				});
+		});
 };
 
 exports.insertUser = async (user) => {
