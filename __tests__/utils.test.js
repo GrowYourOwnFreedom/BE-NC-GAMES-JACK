@@ -2,7 +2,11 @@ const {
 	convertTimestampToDate,
 	createRef,
 	formatComments,
+	encryptPasswords,
+	encryptPassword,
 } = require("../db/seeds/utils");
+const bcrypt = require("bcrypt");
+
 
 describe("convertTimestampToDate", () => {
 	test("returns a new object", () => {
@@ -102,3 +106,24 @@ describe("formatComments", () => {
 		expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
 	});
 });
+
+describe('encryptPasswords',()=> {
+	test('encrypts a password and replaces a users password with encrypted one', ()=>{
+		const testUser = {
+			"username": "tickle122",
+			"name": "Tom Tickle",
+			"avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+			"password": "tickle122"
+		}
+		return encryptPassword(testUser).then(encryptedUser => {
+			console.log(encryptedUser);
+			return bcrypt.compare(testUser.password, encryptedUser.password)
+		})
+		.then((isPasswordMatch)=> {
+			console.log(testUser);
+			expect(isPasswordMatch).toBe(true)
+		})
+		
+				
+	})
+})

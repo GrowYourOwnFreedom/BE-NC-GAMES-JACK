@@ -33,6 +33,7 @@ exports.selectUsersByUsername = (username, password) => {
 				.compare(password, hashedPassword)
 				.then((isPasswordMatch) => {
 					if (isPasswordMatch) {
+						console.log("user", user, "has been logged in successfully");
 						return user;
 					} else {
 						return Promise.reject({
