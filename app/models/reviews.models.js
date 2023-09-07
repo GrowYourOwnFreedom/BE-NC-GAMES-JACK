@@ -134,15 +134,25 @@ exports.uploadReview = (review) => {
 		});
 };
 
-exports.deleteReviewByReview_id = ( id, username ) => {
-	return checkReview_idExists(id).then(() => {
-		if(username)
-		return db.query(
-			`DELETE  FROM reviews
-		WHERE review_id = $1
-		AND owner = $2;`,
-			[id, username]
-		);
-	});
+exports.deleteReviewByReview_id = (id, username) => {
+	return checkReview_idExists(id)
+		.then((result) => {
+			if (username === result.owner) {
+				const deletePromise = db.query(
+					`DELETE  FROM comments
+			WHERE review_id = $1`,
+					[id]
+				);
+				return Promise.all([result, deletePromise])
+			}
+		})
+		.then(([result]) => {
+			if (username === result.owner) {
+				return db.query(
+					`DELETE FROM reviews
+			WHERE review_id = $1`,
+					[id]
+				);
+			}
+		});
 };
-

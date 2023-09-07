@@ -1,10 +1,12 @@
+
 const db = require("../db/connection");
+
 exports.checkReview_idExists = (id) => {
 	return db
 		.query(
 			`
     SELECT * FROM reviews
-    WHERE review_id = $1;
+    WHERE review_id = $1
     `,
 			[id]
 		)
@@ -15,6 +17,7 @@ exports.checkReview_idExists = (id) => {
 					msg: "sorry, review_id not found!",
 				});
 			}
+			return result.rows[0]
 		});
 };
 

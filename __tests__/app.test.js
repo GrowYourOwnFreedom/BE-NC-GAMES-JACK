@@ -303,12 +303,12 @@ describe("PATCH /api/reviews/:review_id", () => {
 	});
 });
 
-describe("DELETE /api/reviews/:review_id", () => {
-	test("DELETE --204 -- should remove a review if review_id exists and it matches username", () => {
+describe("POST /api/reviews/:review_id", () => {
+	test("POST --204 -- should remove a review if review_id exists and it matches username", () => {
 		testBody = { username: "mallionaire" };
 
 		return request(app)
-			.delete("/api/reviews/4")
+			.post("/api/reviews/4")
 			.send(testBody)
 			.expect(204)
 			.then(() => {
