@@ -22,8 +22,6 @@ exports.getUsersByUsername = (req, res, next) => {
 
 exports.postUser = (req, res, next) => {
 	insertUser(req.body).then((user) => {
-		const newUser = { ...user };
-		delete newUser.password;
-		res.status(201).send({ user: newUser });
+		res.status(201).send({ user });
 	}).catch(next)
 };

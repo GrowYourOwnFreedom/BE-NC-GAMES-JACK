@@ -539,7 +539,6 @@ describe("POST /api/users", () => {
 			.expect(201)
 			.then(({ body: { user } }) => {
 				expect(typeof user.username).toBe("string");
-				expect(typeof user.name).toBe("string");
 				expect(typeof user.avatar_url).toBe("string");
 			});
 	});

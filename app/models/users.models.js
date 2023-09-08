@@ -61,6 +61,9 @@ exports.insertUser = async (user) => {
 			);
 		})
 		.then((result) => {
-			return result.rows[0];
+			const user = result.rows[0];
+			delete user.password
+			delete user.name
+			return user
 		});
 };
