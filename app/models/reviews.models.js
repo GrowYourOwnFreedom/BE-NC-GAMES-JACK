@@ -103,12 +103,13 @@ exports.updateReviewVotes = (id, body) => {
 };
 
 exports.uploadReview = (review) => {
-	const { username, body, title, category, designer, review_img_url } =
+	console.log(review);
+	const { owner, review_body, title, category, designer, review_img_url } =
 		review;
 	if (
-		typeof body !== "string" ||
+		typeof review_body !== "string" ||
 		typeof title !== "string" ||
-		typeof username !== "string" ||
+		typeof owner !== "string" ||
 		typeof category !== "string" ||
 		typeof designer !== "string" ||
 		typeof review_img_url !== "string"
@@ -118,7 +119,7 @@ exports.uploadReview = (review) => {
 			msg: "sorry, review should be in the form of an obj with a username, body, title, category, designer and review_img_url properties, all of which should be strings",
 		});
 	}
-	return checkUsernameExists(username)
+	return checkUsernameExists(owner)
 		.then(() => {
 			return db.query(
 				`
@@ -126,7 +127,7 @@ exports.uploadReview = (review) => {
 	(title, owner, review_body, category, designer, review_img_url  )
 	VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 			`,
-				[title, username, body, category, designer, review_img_url]
+				[title, owner, review_body, category, designer, review_img_url]
 			);
 		})
 		.then((result) => {

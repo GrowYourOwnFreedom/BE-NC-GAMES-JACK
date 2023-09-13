@@ -19,8 +19,8 @@
 		"queries": [],
 		"exampleBody": {
 			"title": "test review",
-			"username": "mallionaire",
-			"body": "test review please delete when ready!",
+			"owner": "mallionaire",
+			"review_body": "test review please delete when ready!",
 			"designer": "games designer",
 			"category": "dexterity",
 			"review_img_url": "https://images.pexels.com/photos/411207/pexels-photo-411207.jpeg?w=700&h=700"
