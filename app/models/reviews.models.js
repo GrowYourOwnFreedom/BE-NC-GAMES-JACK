@@ -103,7 +103,6 @@ exports.updateReviewVotes = (id, body) => {
 };
 
 exports.uploadReview = (review) => {
-	console.log(review);
 	const { owner, review_body, title, category, designer, review_img_url } =
 		review;
 	if (

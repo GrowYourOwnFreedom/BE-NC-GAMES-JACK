@@ -1,4 +1,3 @@
-
 const db = require("../db/connection");
 
 exports.checkReview_idExists = (id) => {
@@ -17,7 +16,7 @@ exports.checkReview_idExists = (id) => {
 					msg: "sorry, review_id not found!",
 				});
 			}
-			return result.rows[0]
+			return result.rows[0];
 		});
 };
 
@@ -91,6 +90,25 @@ exports.checkCoulmnValueInTable = (column, value, table) => {
 				return Promise.reject({
 					status: 404,
 					msg: `sorry, ${column} not found!`,
+				});
+			}
+		});
+};
+
+exports.checkCategoryExists = (category) => {
+	return db
+		.query(
+			`
+		SELECT * FROM categories
+		WHERE slug = $1;
+		`,
+			[category]
+		)
+		.then((result) => {
+			if (result.rows.length > 0) {
+				return Promise.reject({
+					status: 400,
+					msg: "sorry, category already exists!",
 				});
 			}
 		});

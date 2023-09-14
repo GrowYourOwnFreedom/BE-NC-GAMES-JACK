@@ -1,3 +1,6 @@
+const { checkCategoryExists } = require("../app/utils");
+const db = require("../db/connection");
+
 const {
 	convertTimestampToDate,
 	createRef,
@@ -6,7 +9,6 @@ const {
 	encryptPassword,
 } = require("../db/seeds/utils");
 const bcrypt = require("bcrypt");
-
 
 describe("convertTimestampToDate", () => {
 	test("returns a new object", () => {
@@ -107,23 +109,38 @@ describe("formatComments", () => {
 	});
 });
 
-describe('encryptPasswords',()=> {
-	test('encrypts a password and replaces a users password with encrypted one', ()=>{
+describe("encryptPasswords", () => {
+	test("encrypts a password and replaces a users password with encrypted one", () => {
 		const testUser = {
-			"username": "tickle122",
-			"name": "Tom Tickle",
-			"avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
-			"password": "tickle122"
-		}
-		return encryptPassword(testUser).then(encryptedUser => {
-			console.log(encryptedUser);
-			return bcrypt.compare(testUser.password, encryptedUser.password)
+			username: "tickle122",
+			name: "Tom Tickle",
+			avatar_url:
+				"https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+			password: "tickle122",
+		};
+		return encryptPassword(testUser)
+			.then((encryptedUser) => {
+				return bcrypt.compare(
+					testUser.password,
+					encryptedUser.password
+				);
+			})
+			.then((isPasswordMatch) => {
+				expect(isPasswordMatch).toBe(true);
+			});
+	});
+});
+
+afterAll(() => db.end());
+
+describe("checkCategoryExists", () => {
+	test('returns error message saying "sorry, category already exists!" if category exists', () => {
+		return checkCategoryExists("dexterity").catch((doesCategoryExist) => {
+			console.log(doesCategoryExist);
+			expect(doesCategoryExist).toEqual({
+				status: 400,
+				msg: "sorry, category already exists!",
+			});
 		})
-		.then((isPasswordMatch)=> {
-			console.log(testUser);
-			expect(isPasswordMatch).toBe(true)
-		})
-		
-				
-	})
-})
+	});
+});

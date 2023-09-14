@@ -34,7 +34,47 @@ describe("GET-/api/categories", () => {
 	});
 });
 
-
+describe("POST /api/categories", () => {
+	test("POST - 201 - should add new category to categories table", () => {
+		const testBody = {
+			slug: "Adult",
+			description: "Naughty games for very good boys and girls.",
+		};
+		return request(app)
+			.post("/api/categories")
+			.send(testBody)
+			.expect(201)
+			.then(({ body: { category } }) => {
+				expect(category.slug).toBe("Adult");
+				expect(category.description).toBe(
+					"Naughty games for very good boys and girls."
+				);
+				return request(app)
+					.get("/api/categories")
+					.expect(200)
+					.then(({ body: { categories } }) => {
+						expect(
+							categories.some(
+								(category) =>
+									category.slug === "Adult" &&
+									category.description ===
+										"Naughty games for very good boys and girls."
+							)
+						).toBe(true);
+					});
+			});
+	});
+	test.only('POST 400 - should return message "sorry, category already exists!"', () => {
+		const testBody = {
+			slug: "dexterity",
+			description: "Naughty games for very good boys and girls.",
+		};
+		return request(app).post("/api/categories").send(testBody).expect(400).then(response => {
+			console.log(response.body);
+			expect(response.body.msg).toBe("sorry, category already exists!")
+		})
+	});
+});
 
 describe("GET /api/reviews", () => {
 	test("a reviews array of review objects including key  comment_count which is the total count of all the comments with this review_id. reviews should be sorted by date in descending order.there should not be a review_body property present on any of the review objects", () => {
@@ -118,9 +158,10 @@ describe("GET /api/reviews", () => {
 describe("POST /api/reviews  accetpts review obj", () => {
 	test("POST 201 -- adds review to database, returns review obj", () => {
 		const testReview = {
-			body: "this is a test review, delet me when you get the chance!",
+			review_body:
+				"this is a test review, delet me when you get the chance!",
 			title: "Test Review",
-			username: "mallionaire",
+			owner: "mallionaire",
 			category: "dexterity",
 			designer: "games designer",
 			review_img_url:
@@ -144,9 +185,10 @@ describe("POST /api/reviews  accetpts review obj", () => {
 		const testReview = {
 			date: "25/08/2023",
 			length: 50,
-			body: "this is a test review, delet me when you get the chance!",
+			review_body:
+				"this is a test review, delet me when you get the chance!",
 			title: "Test Review",
-			username: "mallionaire",
+			owner: "mallionaire",
 			category: "dexterity",
 			designer: "games designer",
 			review_img_url:
@@ -168,9 +210,10 @@ describe("POST /api/reviews  accetpts review obj", () => {
 
 	test('POST 404- "sorry, username not found!"', () => {
 		const testReview = {
-			body: "this is a test review, delet me when you get the chance!",
+			review_body:
+				"this is a test review, delet me when you get the chance!",
 			title: "Test Review",
-			username: "nonsense",
+			owner: "nonsense",
 			category: "dexterity",
 			designer: "games designer",
 			review_img_url:
@@ -187,7 +230,7 @@ describe("POST /api/reviews  accetpts review obj", () => {
 	test("POST 400- object missing required props!", () => {
 		const testReview = {
 			title: "Test Review",
-			username: "mallionaire",
+			owner: "mallionaire",
 			category: "dexterity",
 			designer: "games designer",
 			review_img_url:
@@ -324,8 +367,6 @@ describe("POST /api/reviews/:review_id", () => {
 			});
 	});
 });
-
-
 
 describe("GET-/api/reviews/:review_id/comments", () => {
 	test("should respond with an array of comments for the given review_id, most recent comments first ", () => {
@@ -471,8 +512,6 @@ describe("POST /api/reviews/:review_id/comments. accepts an obj with username an
 	});
 });
 
-
-
 describe("DELETE /api/comments/:comment_id", () => {
 	test("DELETE status 204 should delete the relevant comment ", () => {
 		return request(app)
@@ -547,8 +586,8 @@ describe("POST /api/users", () => {
 describe("POST /api/users/:username", () => {
 	test("POST status 200 responds with correct user obj", () => {
 		const testUser = {
-			password: "Password1"
-		}
+			password: "Password1",
+		};
 		return request(app)
 			.post("/api/users/dav3rid")
 			.send(testUser)
@@ -563,8 +602,8 @@ describe("POST /api/users/:username", () => {
 	});
 	test("POST status 404-username not found", () => {
 		const testUser = {
-			password: "Password1"
-		}
+			password: "Password1",
+		};
 		return request(app)
 			.post("/api/users/nonsense")
 			.send(testUser)
@@ -575,8 +614,8 @@ describe("POST /api/users/:username", () => {
 	});
 	test("POST status 401-incorrect password", () => {
 		const testUser = {
-			password: "Password2"
-		}
+			password: "Password2",
+		};
 		return request(app)
 			.post("/api/users/dav3rid")
 			.send(testUser)

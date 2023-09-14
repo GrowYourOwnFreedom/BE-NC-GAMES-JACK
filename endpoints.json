@@ -14,6 +14,20 @@
 			]
 		}
 	},
+	"POST /api/categories": {
+		"description": "adds a new category to categories table",
+		"queries": [],
+		"exampleBody": {
+			"slug": "Trading Cards",
+			"description": "collect cards and battle other players, you know the drill"
+		},
+		"exampleResponse": {
+			"category": {
+				"slug": "Trading Cards",
+				"description": "collect cards and battle other players, you know the drill"
+			}
+		}
+	},
 	"POST /api/reviews": {
 		"description": "adds a review to the review table",
 		"queries": [],
@@ -152,7 +166,7 @@
 			}
 		}
 	},
-	
+
 	"DELETE /api/comments/:comment_id": {
 		"description": "deleteS the given comment by comment_id parametric endpoint",
 		"queries": []
@@ -188,8 +202,8 @@
 	"POST /api/users/:username": {
 		"description": "serves a user obj for given username if password matches",
 		"queries": [],
-		"exampleBody" : {
-		"password"	: "Password1"
+		"exampleBody": {
+			"password": "Password1"
 		},
 		"exampleResponse": {
 			"user": {
